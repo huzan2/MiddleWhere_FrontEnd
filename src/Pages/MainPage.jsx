@@ -1,11 +1,18 @@
+import styled from 'styled-components';
+
 function MainPage() {
   return (
     <>
-      <div>
-        <h1>Main Page</h1>
-      </div>
+      <Title>Project MiddleWhere</Title>
     </>
   );
 }
 
 export default MainPage;
+
+const Title = styled.p`
+  font-family: 'paybooc';
+  font-size: 50px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.BLUE};
+`;
