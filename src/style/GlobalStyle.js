@@ -1,10 +1,10 @@
 import { createGlobalStyle } from 'styled-components';
-import payboocBold from '../assets/fonts/paybooc-Bold.woff';
-import payboocExtraBold from '../assets/fonts/paybooc-ExtraBold.woff';
-import payboocLight from '../assets/fonts/paybooc-Light.woff';
-import payboocMedium from '../assets/fonts/paybooc-Medium.woff';
-import HakgyoansimBold from '../assets/fonts/Hakgyoansim-Allimjang-TTF-B_1.woff';
-import HakgyoansimRegular from '../assets/fonts/Hakgyoansim-Allimjang-TTF-R_1.woff';
+import payboocBold from '@/assets/fonts/paybooc-Bold.woff';
+import payboocExtraBold from '@/assets/fonts/paybooc-ExtraBold.woff';
+import payboocLight from '@/assets/fonts/paybooc-Light.woff';
+import payboocMedium from '@/assets/fonts/paybooc-Medium.woff';
+import HakgyoansimBold from '@/assets/fonts/Hakgyoansim-Allimjang-TTF-B_1.woff';
+import HakgyoansimRegular from '@/assets/fonts/Hakgyoansim-Allimjang-TTF-R_1.woff';
 
 const GlobalStyle = createGlobalStyle`
     // height: 100dvh;
