@@ -12,7 +12,10 @@ const KakaoLoginButton = () => {
 
   return (
     <Button onClick={handleLogin}>
-      <img src="/src/assets/images/kakao_login_large_wide.png" alt="카카오 로그인" />
+      <img
+        src="/public/images/kakao_login_large_wide.png"
+        alt="카카오 로그인"
+      />
     </Button>
   );
 };
