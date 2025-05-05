@@ -1,13 +1,12 @@
+// src/style/Theme.js
 const Theme = {
-  // ${({ theme }) => theme.colors.colorName};
   colors: {
-    WHITE: '#FFFFFF',
-    BLACK: '#000000',
-    BLUE: '#232EC3',
-    GRAY_1: '#B6B6B6', // disabled button background
-    GRAY_2: '#A3A3A3', // input box border
-    GRAY_3: '#CECECE', // container box border and split line
-    YELLOW: '#FEE500', // kakao signature color
+    primary: '#3C5A99',       // 주요 파란색 버튼
+    background: '#f7f7f7',    // 전체 배경
+    card: '#ffffff',          // 카드 배경
+    text: '#333333',          // 기본 텍스트
+    gray: '#aaaaaa',          // 비활성화 텍스트 등
+    yellow: '#ffeb00',        // 카카오/공유버튼 등에 활용
   },
 };
 

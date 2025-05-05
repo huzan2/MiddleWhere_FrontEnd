@@ -1,44 +1,55 @@
+// src/style/GlobalStyle.js
 import { createGlobalStyle } from 'styled-components';
-import payboocBold from '@/assets/fonts/paybooc-Bold.woff';
-import payboocExtraBold from '@/assets/fonts/paybooc-ExtraBold.woff';
-import payboocLight from '@/assets/fonts/paybooc-Light.woff';
-import payboocMedium from '@/assets/fonts/paybooc-Medium.woff';
-import HakgyoansimBold from '@/assets/fonts/Hakgyoansim-Allimjang-TTF-B_1.woff';
-import HakgyoansimRegular from '@/assets/fonts/Hakgyoansim-Allimjang-TTF-R_1.woff';
+
+import HakgyoB from '../assets/fonts/Hakgyoansim-Allimjang-TTF-B_1.woff';
+import HakgyoR from '../assets/fonts/Hakgyoansim-Allimjang-TTF-R_1.woff';
+import PayboocBold from '../assets/fonts/paybooc-Bold.woff';
+import PayboocExtraBold from '../assets/fonts/paybooc-ExtraBold.woff';
+import PayboocLight from '../assets/fonts/paybooc-Light.woff';
+import PayboocMedium from '../assets/fonts/paybooc-Medium.woff';
 
 const GlobalStyle = createGlobalStyle`
-    // height: 100dvh;
+  /* 폰트 등록 */
+  @font-face {
+    font-family: 'Hakgyoansim-Allimjang-B';
+    src: url(${HakgyoB}) format('woff');
+  }
+  @font-face {
+    font-family: 'Hakgyoansim-Allimjang-R';
+    src: url(${HakgyoR}) format('woff');
+  }
+  @font-face {
+    font-family: 'paybooc-Bold';
+    src: url(${PayboocBold}) format('woff');
+  }
+  @font-face {
+    font-family: 'paybooc-ExtraBold';
+    src: url(${PayboocExtraBold}) format('woff');
+  }
+  @font-face {
+    font-family: 'paybooc-Light';
+    src: url(${PayboocLight}) format('woff');
+  }
+  @font-face {
+    font-family: 'paybooc-Medium';
+    src: url(${PayboocMedium}) format('woff');
+  }
 
-    @font-face {
-        font-family: "hakgyo";
-        src: local('Hakgyoansim Allimjang'), url(${HakgyoansimBold}) format('woff');
-        font-weight: bold; // 700
-    }
-    @font-face {
-        font-family: "hakgyo";
-        src: local("Hakgyoansim Allimjang"), url(${HakgyoansimRegular}) format('woff');
-        font-weight: normal; // 400
-    }
-    @font-face {
-        font-family: "paybooc";
-        src: local('paybooc'), url(${payboocLight}) format('woff');
-        font-weight: 100; // Thin
-    }
-    @font-face {
-        font-family: "paybooc";
-        src: local('paybooc'), url(${payboocMedium}) format('woff');
-        font-weight: normal; // 400
-    }
-    @font-face {
-        font-family: "paybooc";
-        src: local("paybooc"), url(${payboocBold}) format('woff');
-        font-weight: 700; // Bold
-    }
-    @font-face {
-        font-family: "paybooc";
-        src: local('paybooc'), url(${payboocExtraBold}) format('woff');
-        font-weight: 800; // ExtraBold
-    }
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: ${({ theme }) => theme.colors.background};
+    font-family: 'paybooc-Light', sans-serif;
+    color: ${({ theme }) => theme.colors.text};
+  }
+
+  button {
+    font-family: 'paybooc-Light', sans-serif;
+  }
 `;
 
 export default GlobalStyle;
