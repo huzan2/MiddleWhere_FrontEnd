@@ -3,8 +3,7 @@
 ## Middle Where - 프론트엔드 레포지토리
 
 14조 조규진, 하지명, 한지우  
-ec2 머신 공인 IP 주소: 3.39.237.123  
-서버 베포 상태: off
+https://middlewhere.vercel.app/
 
 ---
 
