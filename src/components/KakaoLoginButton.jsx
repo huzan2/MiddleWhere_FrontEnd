@@ -13,7 +13,7 @@ const KakaoLoginButton = () => {
   return (
     <Button onClick={handleLogin}>
       <img
-        src="/public/images/kakao_login_large_wide.png"
+        src="https://middlewhere.vercel.app/images/kakao_login_large_wide.png"
         alt="카카오 로그인"
       />
     </Button>
