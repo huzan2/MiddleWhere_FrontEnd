@@ -1,214 +1,104 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import Modal from '../components/Modal';
 import SideMenu from '../components/SideMenu';
-import Header from '../components/Header'; 
-import React, { useState } from 'react';
+import Header from '../components/Header';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import defaultAvatar from '../assets/default-profile.png';
 
 function MainPage() {
   const navigate = useNavigate();
-  const [isModalOpen, setModalOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const user = JSON.parse(localStorage.getItem('kakao_user'));
 
-  const myMeetings = ['소프트 21 번개모임', '벚꽃구경'];
-  const myGroups = ['소프트 21'];
+  const [myMeetings, setMyMeetings] = useState([
+    { meetId: 1, meetName: '점심약속' },
+    { meetId: 2, meetName: '스터디모임' },
+    { meetId: 3, meetName: '데이트플랜' },
+  ]);
+
+  const [myGroups, setMyGroups] = useState([
+    {
+      groupId: 1,
+      groupName: '동네친구들',
+      members: [defaultAvatar, defaultAvatar, defaultAvatar],
+    },
+    {
+      groupId: 2,
+      groupName: '회사동료들',
+      members: [defaultAvatar, defaultAvatar, defaultAvatar],
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchMyMeetings = async () => {
+      try {
+        const res = await axios.get(`/api/user/mymeeting/${user.id}`);
+        if (Array.isArray(res.data)) setMyMeetings(res.data);
+      } catch (err) {
+        console.warn('⚠️ 모임 API 불러오기 실패. 임시 모임 사용 중');
+      }
+    };
+
+    const fetchMyGroups = async () => {
+      try {
+        const res = await axios.get(`/api/user/mygroup/${user.id}`);
+        if (Array.isArray(res.data)) setMyGroups(res.data);
+      } catch (err) {
+        console.warn('⚠️ 그룹 API 불러오기 실패. 임시 그룹 사용 중');
+      }
+    };
+
+    fetchMyMeetings();
+    fetchMyGroups();
+  }, [user.id]);
 
   return (
     <Wrapper>
       <Header onMenuClick={() => setMenuOpen(true)} />
       {isMenuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
 
-      {/* 모임 목록 */}
       <Section>
         <SectionTitle>내가 가입된 모임</SectionTitle>
         <MeetingList>
           {myMeetings.map((meeting, index) => (
             <MeetingItem key={index}>
-              <span>{meeting}</span>
-              <GoButton onClick={() => navigate('/search')}>바로가기</GoButton>
+              <span>{meeting.meetName}</span>
+              <GoButton onClick={() => navigate('/search', { state: { meetId: meeting.meetId } })}>바로가기</GoButton>
             </MeetingItem>
           ))}
         </MeetingList>
-        <CreateButton onClick={() => setModalOpen(true)}>새 모임 만들기</CreateButton>
+        <CreateButton onClick={() => navigate('/create')}>새 모임 만들기</CreateButton>
       </Section>
 
-      {/* 그룹 카드 */}
       <Section>
         <SectionTitle>내가 속한 그룹</SectionTitle>
-        <GroupCard>
-          <AvatarGroup>
-            <Avatar />
-            <Avatar />
-            <Avatar />
-          </AvatarGroup>
-          <GroupName>{myGroups[0]}</GroupName>
-        </GroupCard>
+        {myGroups.map((group, index) => (
+          <GroupCard key={index}>
+            <AvatarGroup>
+              {(group.members || [1, 2, 3]).map((img, idx) => (
+                <Avatar key={idx} src={typeof img === 'string' ? img : defaultAvatar} />
+              ))}
+            </AvatarGroup>
+            <GroupName>{group.groupName}</GroupName>
+          </GroupCard>
+        ))}
       </Section>
-
-      {/* 새 모임 모달 */}
-      {isModalOpen && (
-        <Modal onClose={() => setModalOpen(false)}>
-          <h3>모임 만들기</h3>
-          <input type="text" placeholder="모임 이름 입력" style={{ width: '100%', marginTop: '10px' }} />
-          <CloseButton onClick={() => setModalOpen(false)}>닫기</CloseButton>
-        </Modal>
-      )}
     </Wrapper>
   );
 }
 
 export default MainPage;
 
-const Wrapper = styled.div`
-  padding: 20px;
-  background-color: ${({ theme }) => theme.colors.background};
-  height: 100vh;
-  font-family: 'paybooc-Light';
-`;
+const Wrapper = styled.div`padding: 24px;`;
+const Section = styled.div`margin-bottom: 32px;`;
+const SectionTitle = styled.h2`font-size: 16px; margin-bottom: 12px; font-family: 'paybooc-Bold';`;
+const MeetingList = styled.div`border: 1px solid #ccc; border-radius: 12px; padding: 12px;`;
+const MeetingItem = styled.div`display: flex; justify-content: space-between; margin-bottom: 10px;`;
+const GoButton = styled.button`background: #333; color: white; font-size: 12px; padding: 4px 10px; border: none; border-radius: 6px;`;
+const CreateButton = styled.button`width: 100%; padding: 12px; background-color: ${({ theme }) => theme.colors.primary}; color: white; border: none; border-radius: 12px; font-weight: bold; margin-top: 12px;`;
+const GroupCard = styled.div`background: #f1f1f1; padding: 16px; border-radius: 12px; text-align: center;`;
+const AvatarGroup = styled.div`display: flex; justify-content: center; gap: 8px; margin-bottom: 8px;`;
+const Avatar = styled.img`width: 28px; height: 28px; border-radius: 50%; background: #ccc; object-fit: cover;`;
+const GroupName = styled.div`font-size: 14px;`;
 
-const Navbar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
-
-const MenuIcon = styled.div`
-  cursor: pointer;
-`;
-
-const Logo = styled.h1`
-  font-family: 'paybooc-Bold';
-  font-size: 20px;
-  text-align: center;
-  line-height: 1.2;
-`;
-
-const ProfileArea = styled.div`
-  position: relative;
-  cursor: pointer;
-`;
-
-const ProfileImg = styled.img`
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-
-const Dropdown = styled.div`
-  position: absolute;
-  top: 42px;
-  right: 0;
-  min-width: 120px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  overflow: hidden;
-  z-index: 100;
-`;
-
-const DropdownItem = styled.div`
-  padding: 10px 16px;
-  font-size: 14px;
-  white-space: nowrap;
-  line-height: 1.5; 
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background: #f5f5f5;
-  }
-`;
-
-
-const Section = styled.div`
-  margin-bottom: 30px;
-`;
-
-const SectionTitle = styled.h3`
-  font-family: 'paybooc-Bold';
-  font-size: 18px;
-  margin-bottom: 12px;
-`;
-
-const MeetingList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
-`;
-
-const MeetingItem = styled.div`
-  background: #f9f9f9;
-  padding: 12px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const GoButton = styled.button`
-  background: #eee;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-`;
-
-const CreateButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #2e4a80;
-  }
-`;
-
-const GroupCard = styled.div`
-  padding: 16px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: fit-content;
-`;
-
-const AvatarGroup = styled.div`
-  display: flex;
-  gap: -5px;
-`;
-
-const Avatar = styled.div`
-  width: 32px;
-  height: 32px;
-  background: ${({ theme }) => theme.colors.primary};
-  border-radius: 50%;
-`;
-
-const GroupName = styled.span`
-  font-family: 'paybooc-Light';
-  font-size: 14px;
-`;
-
-const CloseButton = styled.button`
-  margin-top: 16px;
-  padding: 8px 16px;
-  background-color: #ddd;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-`;

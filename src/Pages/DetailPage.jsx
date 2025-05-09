@@ -1,129 +1,101 @@
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import Header from '../components/Header'; 
-import React, { useState } from 'react';
 
 function DetailPage() {
-  const [isMenuOpen, setMenuOpen] = useState(false);
+  const { state } = useLocation();
+  const { results = {}, tag = '', members = [] } = state || {};
+  const { center = {}, places = [] } = results;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps) {
+      const mapContainer = document.getElementById('map');
+      const options = {
+        center: new window.kakao.maps.LatLng(center.lat, center.lng),
+        level: 3,
+      };
+      const map = new window.kakao.maps.Map(mapContainer, options);
+
+      // 중심 마커
+      const centerMarker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(center.lat, center.lng),
+        map: map,
+      });
+
+      // 추천 장소 마커
+      places.forEach((place) => {
+        const marker = new window.kakao.maps.Marker({
+          position: new window.kakao.maps.LatLng(place.lat, place.lng),
+          map: map,
+        });
+
+        const infowindow = new window.kakao.maps.InfoWindow({
+          content: `<div style="padding:5px;font-size:13px;">${place.name}</div>`,
+        });
+
+        window.kakao.maps.event.addListener(marker, 'click', () => {
+          infowindow.open(map, marker);
+        });
+      });
+    }
+  }, [center, places]);
 
   return (
     <Container>
-      <Header onMenuClick={() => setMenuOpen(true)} />
-      {isMenuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
+      <Header onMenuClick={() => setIsMenuOpen(true)} />
+      {isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}
 
-      {/* 추천 문구 */}
-      <TextWrap>
-        <GroupName>소프트 21 번개모임</GroupName>
-        <RecommendText>
-          모임 장소로 <strong>강남역</strong>을 추천합니다
-        </RecommendText>
-      </TextWrap>
+      <Intro>
+        모임의 중간장소는 <b>{center.name}</b>입니다.
+      </Intro>
 
-      {/* 지도 */}
-      <MapArea>
-        <MapImage src="https://via.placeholder.com/300x250?text=Map+Placeholder" alt="지도" />
-      </MapArea>
+      <MapWrapper id="map" />
 
-      {/* 경로/장소 카드 */}
-      <CardBox>
-        <SubTitle>경로 1</SubTitle>
-        <PlaceList>
-          <PlaceItem>
-            <div>모리카츠 강남역점</div>
-            <ButtonRow>
-              <DetailButton>상세정보</DetailButton>
-              <ShareButton>링크 공유</ShareButton>
-            </ButtonRow>
-          </PlaceItem>
-          <PlaceItem>역삼까치공원</PlaceItem>
-          <PlaceItem>알렉산더 커피 워크</PlaceItem>
-        </PlaceList>
-      </CardBox>
+      <ResultList>
+        {places.map((place, index) => (
+          <ResultCard key={index}>
+            <PlaceName>{place.name}</PlaceName>
+            <Category>{place.category}</Category>
+            <Address>{place.address}</Address>
+          </ResultCard>
+        ))}
+      </ResultList>
+
+      <ShareButton>📎 링크 공유</ShareButton>
     </Container>
   );
 }
 
 export default DetailPage;
 
-const Container = styled.div`
-  padding: 20px;
-  font-family: 'paybooc-Light';
-`;
-
-const TextWrap = styled.div`
-  margin: 20px 0;
-`;
-
-const GroupName = styled.h2`
-  font-size: 16px;
-  margin-bottom: 6px;
-`;
-
-const RecommendText = styled.div`
-  font-size: 16px;
-
-  strong {
-    font-weight: bold;
-    font-family: 'paybooc-Bold';
-  }
-`;
-
-const MapArea = styled.div`
-  margin: 12px 0;
-`;
-
-const MapImage = styled.img`
+const Container = styled.div`padding: 20px;`;
+const Intro = styled.div`margin-bottom: 16px; font-size: 18px;`;
+const MapWrapper = styled.div`
   width: 100%;
-  height: 250px;
+  height: 300px;
   border-radius: 12px;
-  object-fit: cover;
+  background-color: #eee;
+  margin-bottom: 20px;
 `;
-
-const CardBox = styled.div`
-  background: #fff;
-  border-radius: 16px;
+const ResultList = styled.div`display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;`;
+const ResultCard = styled.div`
   padding: 16px;
-  margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
 `;
-
-const SubTitle = styled.h3`
-  font-size: 16px;
-  font-family: 'paybooc-Bold';
-  margin-bottom: 12px;
-`;
-
-const PlaceList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const PlaceItem = styled.div`
-  padding: 12px;
-  background: #f5f5f5;
-  border-radius: 10px;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-`;
-
-const DetailButton = styled.button`
-  background: #ddd;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-`;
-
+const PlaceName = styled.div`font-size: 16px; font-weight: bold; color: #222; margin-bottom: 4px;`;
+const Category = styled.div`font-size: 13px; color: #888;`;
+const Address = styled.div`font-size: 13px; color: #666;`;
 const ShareButton = styled.button`
+  width: 100%;
   background: #ffeb00;
   border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
+  border-radius: 10px;
+  padding: 14px;
   font-weight: bold;
+  font-size: 16px;
 `;

@@ -1,52 +1,157 @@
+// SearchPage.jsx
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import Header from '../components/Header'; 
-import React, { useState } from 'react';
-
-const members = [
-  { name: '김철수', location: '서울특별시 노원구 월계동' },
-  { name: '김영희', location: '서울특별시 마포구 연남동' },
-  { name: '사용자1', location: '경기도 성남시 분당구 삼평동' },
-];
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
+import defaultAvatar from '../assets/default-profile.png';
 
 function SearchPage() {
+  const location = useLocation();
+  const meetId = location?.state?.meetId;
+
+  const user = JSON.parse(localStorage.getItem('kakao_user'));
   const navigate = useNavigate();
-  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('식사');
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const defaultMembers = [
+        { memberName: '김철수', memberLocation: '서울특별시 노원구 월계동' },
+        { memberName: '김영희', memberLocation: '서울특별시 성북구 정릉동' },
+        {
+          memberName: '사용자1',
+          memberLocation: '서울특별시 동대문구 회기동',
+        },
+        { memberName: '사용자2', memberLocation: '서울특별시 마포구 상수동' },
+      ];
+
+      try {
+        if (meetId) {
+          const res = await axios.get(`/api/meeting/info/${meetId}`);
+          const members = Array.isArray(res.data.members)
+            ? res.data.members
+            : defaultMembers;
+          setMembers(members);
+        } else {
+          setMembers(defaultMembers);
+        }
+      } catch (err) {
+        console.warn('⚠️ 모임 멤버 불러오기 실패. 기본값 사용');
+        setMembers(defaultMembers);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  const handleSearch = async () => {
+    try {
+      const locations = members.map((m) => m.memberLocation);
+      const res = await axios.post('/api/search/where', {
+        locations,
+        category: selectedTag,
+      });
+
+      const results =
+        Array.isArray(res.data) && res.data.length > 0
+          ? res.data
+          : [
+              {
+                placeName: '스타벅스 강남역점',
+                address: '서울 강남구 테헤란로 123',
+              },
+              { placeName: '이디야 역삼점', address: '서울 강남구 역삼로 456' },
+              {
+                placeName: '투썸플레이스 신논현',
+                address: '서울 서초구 강남대로 789',
+              },
+            ];
+
+      navigate('/detail', { state: { results, tag: selectedTag, members } });
+    } catch (err) {
+      console.warn('검색 실패, 임시 데이터로 이동합니다:', err);
+      const fallback = {
+        center: {
+          lat: 37.582059,
+          lng: 127.001888,
+          name: '혜화역',
+        },
+        places: [
+          {
+            name: '칸다소바 혜화점',
+            address: '서울 종로구 대학로 131-1',
+            lat: 37.582821,
+            lng: 127.001381,
+            category: '일식',
+          },
+          {
+            name: '마로니에공원',
+            address: '서울 종로구 대학로 104',
+            lat: 37.580478,
+            lng: 127.002835,
+            category: '공원',
+          },
+          {
+            name: '커피한약방 혜화점',
+            address: '서울 종로구 동숭2길 9',
+            lat: 37.580825,
+            lng: 127.004801,
+            category: '카페',
+          },
+        ],
+      };
+
+      navigate('/detail', {
+        state: {
+          results: fallback,
+          tag: selectedTag,
+          members,
+        },
+      });
+    }
+  };
 
   return (
     <Container>
-      <Header onMenuClick={() => setMenuOpen(true)} />
-      {isMenuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
+      <Header onMenuClick={() => setIsMenuOpen(true)} />
+      {isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}
+      <Title>중간지점 검색</Title>
 
-      {/* 그룹원 리스트 */}
-      <ContentBox>
-        <GroupTitle>소프트 21 번개모임</GroupTitle>
-        <MemberList>
-          {members.map((user, idx) => (
+      <MemberList>
+        {Array.isArray(members) && members.length > 0 ? (
+          members.map((m, idx) => (
             <Member key={idx}>
-              <Avatar>{user.name[0]}</Avatar>
-              <UserInfo>
-                <div>{user.name}</div>
-                <div>{user.location}</div>
-              </UserInfo>
-              <EditButton>위치 수정</EditButton>
+              <ProfileIcon src={defaultAvatar} />
+              <MemberInfo>
+                <div>{m.memberName}</div>
+                <div>{m.memberLocation}</div>
+              </MemberInfo>
+              <EditBtn>위치 수정</EditBtn>
             </Member>
-          ))}
-          <AddMember>+</AddMember>
-        </MemberList>
-      </ContentBox>
+          ))
+        ) : (
+          <div>멤버를 불러오는 중입니다...</div>
+        )}
+      </MemberList>
 
-      {/* 태그 */}
-      <TagRow>
-        {['식사', '데이트', '영화', '공부'].map((tag, i) => (
-          <Tag key={i}># {tag}</Tag>
+      <SubTitle>방문 목적 선택</SubTitle>
+      <Tags>
+        {['식사', '데이트', '영화', '공부'].map((tag) => (
+          <Tag
+            key={tag}
+            selected={selectedTag === tag}
+            onClick={() => setSelectedTag(tag)}
+          >
+            #{tag}
+          </Tag>
         ))}
-      </TagRow>
+      </Tags>
 
-      <ConfirmButton onClick={() => navigate('/detail')}>
-        검색결과 확인하기
-      </ConfirmButton>
+      <SearchBtn onClick={handleSearch}>검색결과 확인하기</SearchBtn>
     </Container>
   );
 }
@@ -55,90 +160,69 @@ export default SearchPage;
 
 const Container = styled.div`
   padding: 20px;
-  font-family: 'paybooc-Light';
 `;
-
-const ContentBox = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 20px;
-`;
-
-const GroupTitle = styled.h2`
-  font-size: 18px;
+const Title = styled.h2`
+  font-size: 22px;
+  font-weight: bold;
   margin-bottom: 16px;
 `;
-
 const MemberList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
 `;
-
 const Member = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  &:last-child {
+    border-bottom: none;
+  }
 `;
-
-const Avatar = styled.div`
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border-radius: 50%;
+const ProfileIcon = styled.img`
   width: 36px;
   height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
+  border-radius: 50%;
+  margin-right: 12px;
 `;
-
-const UserInfo = styled.div`
+const MemberInfo = styled.div`
   flex: 1;
-  display: flex;
-  flex-direction: column;
 `;
-
-const EditButton = styled.button`
-  background: #eee;
-  border: none;
+const EditBtn = styled.button`
+  font-size: 12px;
+  padding: 4px 8px;
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
+  border: none;
+  background: #4f46e5;
+  color: white;
 `;
-
-const AddMember = styled.div`
-  background: #eee;
-  text-align: center;
-  padding: 16px;
-  border-radius: 10px;
-  font-size: 20px;
-  color: #999;
+const SubTitle = styled.div`
+  font-weight: bold;
+  margin-bottom: 10px;
 `;
-
-const TagRow = styled.div`
+const Tags = styled.div`
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 24px;
+  margin-bottom: 24px;
 `;
-
 const Tag = styled.div`
   padding: 6px 12px;
   border-radius: 20px;
-  background: #f0f0f0;
-  font-size: 14px;
+  background-color: ${({ selected }) => (selected ? '#4f46e5' : '#eee')};
+  color: ${({ selected }) => (selected ? '#fff' : '#000')};
+  cursor: pointer;
 `;
-
-const ConfirmButton = styled.button`
+const SearchBtn = styled.button`
   width: 100%;
-  margin-top: 24px;
   padding: 14px;
   background: ${({ theme }) => theme.colors.primary};
   color: white;
   font-weight: bold;
+  font-size: 16px;
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
+  border-radius: 12px;
 `;

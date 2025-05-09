@@ -1,16 +1,24 @@
-// src/components/SideMenu.jsx
+// SideMenu.jsx
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 function SideMenu({ onClose }) {
+  const navigate = useNavigate();
+
+  const goTo = (path) => {
+    navigate(path);
+    onClose();
+  };
+
   return (
     <Backdrop onClick={onClose}>
       <MenuBox onClick={(e) => e.stopPropagation()}>
         <Header>Middle Where</Header>
-        <MenuItem>메인 화면</MenuItem>
-        <MenuItem>이용 기록</MenuItem>
-        <MenuItem>친구 관리</MenuItem>
-        <MenuItem>그룹 관리</MenuItem>
-        <MenuItem>문의사항</MenuItem>
+        <MenuItem onClick={() => goTo('/main')}>메인 화면</MenuItem>
+        <MenuItem onClick={() => goTo('/history')}>이용 기록</MenuItem>
+        <MenuItem onClick={() => goTo('/friends')}>친구 관리</MenuItem>
+        <MenuItem onClick={() => goTo('/groups')}>그룹 관리</MenuItem>
+        <MenuItem onClick={() => goTo('/questions')}>문의사항</MenuItem>
       </MenuBox>
     </Backdrop>
   );
