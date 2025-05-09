@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import defaultAvatar from '../assets/default-profile.png';
+import { axiosInstance } from '@/Apis/@core';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -33,6 +34,9 @@ function MainPage() {
   useEffect(() => {
     const fetchMyMeetings = async () => {
       try {
+        // 통신 테스트
+        const testres = await axiosInstance.get('/test/users');
+        console.log(testres.data);
         const res = await axios.get(`/api/user/mymeeting/${user.id}`);
         if (Array.isArray(res.data)) setMyMeetings(res.data);
       } catch (err) {
@@ -64,11 +68,19 @@ function MainPage() {
           {myMeetings.map((meeting, index) => (
             <MeetingItem key={index}>
               <span>{meeting.meetName}</span>
-              <GoButton onClick={() => navigate('/search', { state: { meetId: meeting.meetId } })}>바로가기</GoButton>
+              <GoButton
+                onClick={() =>
+                  navigate('/search', { state: { meetId: meeting.meetId } })
+                }
+              >
+                바로가기
+              </GoButton>
             </MeetingItem>
           ))}
         </MeetingList>
-        <CreateButton onClick={() => navigate('/create')}>새 모임 만들기</CreateButton>
+        <CreateButton onClick={() => navigate('/create')}>
+          새 모임 만들기
+        </CreateButton>
       </Section>
 
       <Section>
@@ -77,7 +89,10 @@ function MainPage() {
           <GroupCard key={index}>
             <AvatarGroup>
               {(group.members || [1, 2, 3]).map((img, idx) => (
-                <Avatar key={idx} src={typeof img === 'string' ? img : defaultAvatar} />
+                <Avatar
+                  key={idx}
+                  src={typeof img === 'string' ? img : defaultAvatar}
+                />
               ))}
             </AvatarGroup>
             <GroupName>{group.groupName}</GroupName>
@@ -90,15 +105,64 @@ function MainPage() {
 
 export default MainPage;
 
-const Wrapper = styled.div`padding: 24px;`;
-const Section = styled.div`margin-bottom: 32px;`;
-const SectionTitle = styled.h2`font-size: 16px; margin-bottom: 12px; font-family: 'paybooc-Bold';`;
-const MeetingList = styled.div`border: 1px solid #ccc; border-radius: 12px; padding: 12px;`;
-const MeetingItem = styled.div`display: flex; justify-content: space-between; margin-bottom: 10px;`;
-const GoButton = styled.button`background: #333; color: white; font-size: 12px; padding: 4px 10px; border: none; border-radius: 6px;`;
-const CreateButton = styled.button`width: 100%; padding: 12px; background-color: ${({ theme }) => theme.colors.primary}; color: white; border: none; border-radius: 12px; font-weight: bold; margin-top: 12px;`;
-const GroupCard = styled.div`background: #f1f1f1; padding: 16px; border-radius: 12px; text-align: center;`;
-const AvatarGroup = styled.div`display: flex; justify-content: center; gap: 8px; margin-bottom: 8px;`;
-const Avatar = styled.img`width: 28px; height: 28px; border-radius: 50%; background: #ccc; object-fit: cover;`;
-const GroupName = styled.div`font-size: 14px;`;
-
+const Wrapper = styled.div`
+  padding: 24px;
+`;
+const Section = styled.div`
+  margin-bottom: 32px;
+`;
+const SectionTitle = styled.h2`
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-family: 'paybooc-Bold';
+`;
+const MeetingList = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+`;
+const MeetingItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+const GoButton = styled.button`
+  background: #333;
+  color: white;
+  font-size: 12px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+`;
+const CreateButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-top: 12px;
+`;
+const GroupCard = styled.div`
+  background: #f1f1f1;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+`;
+const AvatarGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+`;
+const Avatar = styled.img`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ccc;
+  object-fit: cover;
+`;
+const GroupName = styled.div`
+  font-size: 14px;
+`;

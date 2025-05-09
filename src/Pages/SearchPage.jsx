@@ -6,6 +6,7 @@ import SideMenu from '../components/SideMenu';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import defaultAvatar from '../assets/default-profile.png';
+import { axiosInstance } from '@/Apis/@core';
 
 function SearchPage() {
   const location = useLocation();
@@ -51,10 +52,11 @@ function SearchPage() {
   const handleSearch = async () => {
     try {
       const locations = members.map((m) => m.memberLocation);
-      const res = await axios.post('/api/search/where', {
+      const res = await axiosInstance.post('/search/where', {
         locations,
         category: selectedTag,
       });
+      console.log(res);
 
       const results =
         Array.isArray(res.data) && res.data.length > 0
