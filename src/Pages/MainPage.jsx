@@ -1,168 +1,70 @@
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import SideMenu from '../components/SideMenu';
-import Header from '../components/Header';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import defaultAvatar from '../assets/default-profile.png';
-import { axiosInstance } from '@/Apis/@core';
+import styled from 'styled-components';
+import Header from '../components/Header';
+import SideMenu from '../components/SideMenu';
+import { useNavigate } from 'react-router-dom';
+import { getMyMeetings, getMyGroups } from '../Apis/main';
 
 function MainPage() {
   const navigate = useNavigate();
-  const [isMenuOpen, setMenuOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem('kakao_user'));
-
-  const [myMeetings, setMyMeetings] = useState([
-    { meetId: 1, meetName: '점심약속' },
-    { meetId: 2, meetName: '스터디모임' },
-    { meetId: 3, meetName: '데이트플랜' },
-  ]);
-
-  const [myGroups, setMyGroups] = useState([
-    {
-      groupId: 1,
-      groupName: '동네친구들',
-      members: [defaultAvatar, defaultAvatar, defaultAvatar],
-    },
-    {
-      groupId: 2,
-      groupName: '회사동료들',
-      members: [defaultAvatar, defaultAvatar, defaultAvatar],
-    },
-  ]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [meets, setMeets] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    const fetchMyMeetings = async () => {
+    const fetchData = async () => {
       try {
-        // 통신 테스트
-        const testres = await axiosInstance.get('/test/users');
-        console.log(testres.data);
-        const res = await axios.get(`/api/user/mymeeting/${user.id}`);
-        if (Array.isArray(res.data)) setMyMeetings(res.data);
+        const meetData = await getMyMeetings(user.id);
+        const groupData = await getMyGroups(user.id);
+        setMeets(Array.isArray(meetData) ? meetData : []);
+        setGroups(Array.isArray(groupData) ? groupData : []);
       } catch (err) {
-        console.warn('⚠️ 모임 API 불러오기 실패. 임시 모임 사용 중');
+        console.warn('데이터 불러오기 실패:', err);
+        setMeets([]);
+        setGroups([]);
       }
     };
-
-    const fetchMyGroups = async () => {
-      try {
-        const res = await axios.get(`/api/user/mygroup/${user.id}`);
-        if (Array.isArray(res.data)) setMyGroups(res.data);
-      } catch (err) {
-        console.warn('⚠️ 그룹 API 불러오기 실패. 임시 그룹 사용 중');
-      }
-    };
-
-    fetchMyMeetings();
-    fetchMyGroups();
+    fetchData();
   }, [user.id]);
 
   return (
-    <Wrapper>
-      <Header onMenuClick={() => setMenuOpen(true)} />
-      {isMenuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
+    <Container>
+      <Header onMenuClick={() => setIsMenuOpen(true)} />
+      {isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}
 
       <Section>
-        <SectionTitle>내가 가입된 모임</SectionTitle>
-        <MeetingList>
-          {myMeetings.map((meeting, index) => (
-            <MeetingItem key={index}>
-              <span>{meeting.meetName}</span>
-              <GoButton
-                onClick={() =>
-                  navigate('/search', { state: { meetId: meeting.meetId } })
-                }
-              >
-                바로가기
-              </GoButton>
-            </MeetingItem>
-          ))}
-        </MeetingList>
-        <CreateButton onClick={() => navigate('/create')}>
-          새 모임 만들기
-        </CreateButton>
+        <Title>내 모임</Title>
+        {meets.length === 0 ? <EmptyText>모임이 없습니다.</EmptyText> : (
+          <CardList>
+            {meets.map((m, idx) => (
+              <Card key={idx} onClick={() => navigate('/search', { state: { meetId: m.meetId } })}>
+                {m.meetName}
+              </Card>
+            ))}
+          </CardList>
+        )}
       </Section>
 
       <Section>
-        <SectionTitle>내가 속한 그룹</SectionTitle>
-        {myGroups.map((group, index) => (
-          <GroupCard key={index}>
-            <AvatarGroup>
-              {(group.members || [1, 2, 3]).map((img, idx) => (
-                <Avatar
-                  key={idx}
-                  src={typeof img === 'string' ? img : defaultAvatar}
-                />
-              ))}
-            </AvatarGroup>
-            <GroupName>{group.groupName}</GroupName>
-          </GroupCard>
-        ))}
+        <Title>내 그룹</Title>
+        {groups.length === 0 ? <EmptyText>그룹이 없습니다.</EmptyText> : (
+          <CardList>
+            {groups.map((g, idx) => (
+              <Card key={idx}>{g.groupName}</Card>
+            ))}
+          </CardList>
+        )}
       </Section>
-    </Wrapper>
+    </Container>
   );
 }
 
 export default MainPage;
 
-const Wrapper = styled.div`
-  padding: 24px;
-`;
-const Section = styled.div`
-  margin-bottom: 32px;
-`;
-const SectionTitle = styled.h2`
-  font-size: 16px;
-  margin-bottom: 12px;
-  font-family: 'paybooc-Bold';
-`;
-const MeetingList = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 12px;
-`;
-const MeetingItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-`;
-const GoButton = styled.button`
-  background: #333;
-  color: white;
-  font-size: 12px;
-  padding: 4px 10px;
-  border: none;
-  border-radius: 6px;
-`;
-const CreateButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  margin-top: 12px;
-`;
-const GroupCard = styled.div`
-  background: #f1f1f1;
-  padding: 16px;
-  border-radius: 12px;
-  text-align: center;
-`;
-const AvatarGroup = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-`;
-const Avatar = styled.img`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #ccc;
-  object-fit: cover;
-`;
-const GroupName = styled.div`
-  font-size: 14px;
-`;
+const Container = styled.div`padding: 20px;`;
+const Section = styled.section`margin-bottom: 32px;`;
+const Title = styled.h2`font-size: 20px; margin-bottom: 12px;`;
+const EmptyText = styled.div`color: gray; font-size: 14px; margin-top: 8px;`;
+const CardList = styled.div`display: flex; flex-direction: column; gap: 12px;`;
+const Card = styled.div`padding: 14px; border-radius: 10px; background: #f5f5f5; cursor: pointer; font-size: 16px; font-weight: 500;`;

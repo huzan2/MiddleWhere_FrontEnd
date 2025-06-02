@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaBars, FaUserCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 function Header({ onMenuClick }) {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('kakao_user'));
   const nickname = user?.kakao_account?.profile?.nickname;
   const profileImage = user?.kakao_account?.profile?.profile_image_url;
@@ -25,25 +27,30 @@ function Header({ onMenuClick }) {
     window.location.href = '/';
   };
 
+  const handleGoToProfile = () => {
+    navigate('/profile');
+    setDropdownOpen(false);
+  };
+
   return (
     <Navbar>
       <FaBars size={22} onClick={onMenuClick} />
       <Logo>Middle<br />Where</Logo>
       <ProfileArea ref={dropdownRef}>
-      {profileImage ? (
-        <ProfileImg
-          src={profileImage}
-          alt="프로필"
-          onClick={() => setDropdownOpen(!isDropdownOpen)}
-        />
-      ) : (
-      <FaUserCircle size={28} onClick={() => setDropdownOpen(!isDropdownOpen)} />
-      )}
+        {profileImage ? (
+          <ProfileImg
+            src={profileImage}
+            alt="프로필"
+            onClick={() => setDropdownOpen(!isDropdownOpen)}
+          />
+        ) : (
+          <FaUserCircle size={28} onClick={() => setDropdownOpen(!isDropdownOpen)} />
+        )}
 
         {isDropdownOpen && (
           <Dropdown>
             <DropdownItem>{nickname}님</DropdownItem>
-            <DropdownItem>내 정보</DropdownItem>
+            <DropdownItem onClick={handleGoToProfile}>내 정보</DropdownItem>
             <DropdownItem onClick={handleLogout}>로그아웃</DropdownItem>
           </Dropdown>
         )}

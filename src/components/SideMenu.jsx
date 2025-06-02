@@ -1,69 +1,77 @@
-// SideMenu.jsx
+import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../Apis/user';
 
 function SideMenu({ onClose }) {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('kakao_user'));
 
-  const goTo = (path) => {
-    navigate(path);
-    onClose();
+  const handleLogout = async () => {
+    try {
+      await logoutUser(user.id);
+    } catch (err) {
+      console.warn('로그아웃 API 실패:', err);
+    }
+    localStorage.removeItem('kakao_user');
+    navigate('/');
   };
 
   return (
-    <Backdrop onClick={onClose}>
-      <MenuBox onClick={(e) => e.stopPropagation()}>
-        <Header>Middle Where</Header>
-        <MenuItem onClick={() => goTo('/main')}>메인 화면</MenuItem>
-        <MenuItem onClick={() => goTo('/history')}>이용 기록</MenuItem>
-        <MenuItem onClick={() => goTo('/friends')}>친구 관리</MenuItem>
-        <MenuItem onClick={() => goTo('/groups')}>그룹 관리</MenuItem>
-        <MenuItem onClick={() => goTo('/questions')}>문의사항</MenuItem>
-      </MenuBox>
-    </Backdrop>
+    <Overlay onClick={onClose}>
+      <MenuContainer onClick={(e) => e.stopPropagation()}>
+        <CloseBtn onClick={onClose}>닫기 ✕</CloseBtn>
+        <MenuItem onClick={() => navigate('/main')}>메인화면</MenuItem>
+        <MenuItem onClick={() => navigate('/friend')}>친구 관리</MenuItem>
+        <MenuItem onClick={() => navigate('/group')}>그룹 관리</MenuItem>
+        <MenuItem onClick={() => navigate('/history')}>이용 기록</MenuItem>
+        <MenuItem onClick={() => navigate('/question')}>문의 사항</MenuItem>
+        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+      </MenuContainer>
+    </Overlay>
   );
 }
 
 export default SideMenu;
 
-const Backdrop = styled.div`
+const Overlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  z-index: 1000;
+  justify-content: flex-start; 
 `;
 
-const MenuBox = styled.div`
-  width: 260px;
+const MenuContainer = styled.div`
+  width: 240px;
   height: 100%;
-  background-color: white;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background: white;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
-const Header = styled.div`
-  font-size: 18px;
-  font-weight: bold;
-  font-family: 'paybooc-Bold';
-  margin-bottom: 20px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-`;
-
-const MenuItem = styled.div`
-  padding: 12px 0;
+const CloseBtn = styled.button`
+  align-self: flex-end;
+  background: none;
+  border: none;
   font-size: 16px;
   cursor: pointer;
+`;
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.primary};
-  }
+const MenuItem = styled.button`
+  text-align: left;
+  font-size: 16px;
+  padding: 10px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+`;
+
+const LogoutButton = styled(MenuItem)`
+  background: #ffe5e5;
+  color: red;
+  font-weight: bold;
 `;

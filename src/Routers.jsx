@@ -11,6 +11,7 @@ import HistoryPage from './Pages/HistoryPage';
 import FriendPage from './Pages/FriendPage';
 import GroupPage from './Pages/GroupPage';
 import QuestionPage from './Pages/QuestionPage';
+import ProfilePage from './Pages/ProfilePage';
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   { path: '/friends', element: <FriendPage /> },
   { path: '/groups', element: <GroupPage /> },
   { path: '/questions', element: <QuestionPage /> },
+  { path: '/profile', element: <ProfilePage /> },
 ]);
 
 const Routers = () => <RouterProvider router={router} />;
