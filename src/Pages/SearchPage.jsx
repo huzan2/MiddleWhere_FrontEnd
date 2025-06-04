@@ -24,7 +24,9 @@ function SearchPage() {
       try {
         if (meetId) {
           const res = await axios.get(`/api/meeting/info/${meetId}`);
-          const members = Array.isArray(res.data.members) ? res.data.members : [];
+          const members = Array.isArray(res.data.members)
+            ? res.data.members
+            : [];
           setMembers(members);
         } else {
           setMembers([]);
@@ -33,6 +35,24 @@ function SearchPage() {
         console.warn('⚠️ 모임 멤버 불러오기 실패:', err);
         setMembers([]);
       }
+      setMembers([
+        {
+          memberName: '홍길동',
+          memberLocation: '서울역',
+        },
+        {
+          memberName: '김영희',
+          memberLocation: '잠실역',
+        },
+        {
+          memberName: '이철수',
+          memberLocation: '홍대입구역',
+        },
+        {
+          memberName: '한지우',
+          memberLocation: '석계역',
+        },
+      ]);
     };
 
     fetchMembers();
@@ -41,7 +61,10 @@ function SearchPage() {
   const handleSearch = async () => {
     try {
       const locations = members.map((m) => m.memberLocation);
-      const results = await searchMidpoint({ locations, category: selectedTag });
+      const results = await searchMidpoint({
+        locations,
+        category: selectedTag,
+      });
       navigate('/detail', { state: { results, tag: selectedTag, members } });
     } catch (err) {
       console.warn('검색 실패:', err);
@@ -69,7 +92,9 @@ function SearchPage() {
   };
 
   const handleLocationChange = async (member) => {
-    const newLocation = prompt(`새 출발 위치를 입력하세요 (현재: ${member.memberLocation})`);
+    const newLocation = prompt(
+      `새 출발 위치를 입력하세요 (현재: ${member.memberLocation})`,
+    );
     if (!newLocation?.trim()) return;
     try {
       await updateUserLocation({
@@ -80,8 +105,10 @@ function SearchPage() {
       alert('출발 위치가 변경되었습니다.');
       setMembers((prev) =>
         prev.map((m) =>
-          m.userId === member.userId ? { ...m, memberLocation: newLocation } : m
-        )
+          m.userId === member.userId
+            ? { ...m, memberLocation: newLocation }
+            : m,
+        ),
       );
     } catch (err) {
       alert('출발 위치 수정 실패');
@@ -103,7 +130,9 @@ function SearchPage() {
                 <div>{m.memberName}</div>
                 <div>{m.memberLocation}</div>
               </MemberInfo>
-              <EditBtn onClick={() => handleLocationChange(m)}>위치 수정</EditBtn>
+              <EditBtn onClick={() => handleLocationChange(m)}>
+                위치 수정
+              </EditBtn>
             </Member>
           ))
         ) : (
@@ -131,14 +160,71 @@ function SearchPage() {
 
 export default SearchPage;
 
-const Container = styled.div`padding: 20px;`;
-const Title = styled.h2`font-size: 22px; font-weight: bold; margin-bottom: 16px;`;
-const MemberList = styled.div`border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 20px;`;
-const Member = styled.div`display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; font-size: 14px; &:last-child { border-bottom: none; }`;
-const ProfileIcon = styled.img`width: 36px; height: 36px; border-radius: 50%; margin-right: 12px;`;
-const MemberInfo = styled.div`flex: 1;`;
-const EditBtn = styled.button`font-size: 12px; padding: 4px 8px; border-radius: 8px; border: none; background: #4f46e5; color: white;`;
-const SubTitle = styled.div`font-weight: bold; margin-bottom: 10px;`;
-const Tags = styled.div`display: flex; gap: 10px; margin-bottom: 24px;`;
-const Tag = styled.div`padding: 6px 12px; border-radius: 20px; background-color: ${({ selected }) => (selected ? '#4f46e5' : '#eee')}; color: ${({ selected }) => (selected ? '#fff' : '#000')}; cursor: pointer;`;
-const SearchBtn = styled.button`width: 100%; padding: 14px; background: ${({ theme }) => theme.colors.primary}; color: white; font-weight: bold; font-size: 16px; border: none; border-radius: 12px;`;
+const Container = styled.div`
+  padding: 20px;
+`;
+const Title = styled.h2`
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 16px;
+`;
+const MemberList = styled.div`
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+`;
+const Member = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+const ProfileIcon = styled.img`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 12px;
+`;
+const MemberInfo = styled.div`
+  flex: 1;
+`;
+const EditBtn = styled.button`
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+`;
+const SubTitle = styled.div`
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
+const Tags = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+`;
+const Tag = styled.div`
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: ${({ selected }) => (selected ? '#4f46e5' : '#eee')};
+  color: ${({ selected }) => (selected ? '#fff' : '#000')};
+  cursor: pointer;
+`;
+const SearchBtn = styled.button`
+  width: 100%;
+  padding: 14px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+`;

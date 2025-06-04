@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
+  axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URI;
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -24,7 +25,7 @@ const OAuthCallback = () => {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
             },
-          }
+          },
         );
 
         const access_token = tokenRes.data.access_token;
@@ -41,20 +42,25 @@ const OAuthCallback = () => {
 
         // 3. 사용자 존재 여부 확인 후 분기 이동
         try {
-          const check = await axios.get(`/api/user/info/${kakaoUser.id}`);
-          if (check.data) {
+          const check = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URI}/api/user/info/${kakaoUser.id}`,
+          );
+          if (check.status === 200) {
             navigate('/main');
             return;
+          } else if (check.status === 404) {
+            console.log('신규 사용자입니다. 회원가입 페이지로 이동');
+            navigate('/register');
           }
         } catch (err) {
-          console.log('신규 사용자입니다. 회원가입 페이지로 이동');
+          console.log('회원 정보 확인 중 오류 발생');
+          navigate('/');
         }
-
-        navigate('/register');
       } catch (err) {
         console.error('카카오 로그인 실패:', err);
         alert('로그인 실패');
       }
+      navigate('/');
     };
 
     fetchToken();
