@@ -35,7 +35,15 @@ function Header({ onMenuClick }) {
   return (
     <Navbar>
       <FaBars size={22} onClick={onMenuClick} />
-      <Logo>Middle<br />Where</Logo>
+      <Logo
+        onClick={() => {
+          navigate('/main');
+        }}
+      >
+        Middle
+        <br />
+        Where
+      </Logo>
       <ProfileArea ref={dropdownRef}>
         {profileImage ? (
           <ProfileImg
@@ -44,7 +52,10 @@ function Header({ onMenuClick }) {
             onClick={() => setDropdownOpen(!isDropdownOpen)}
           />
         ) : (
-          <FaUserCircle size={28} onClick={() => setDropdownOpen(!isDropdownOpen)} />
+          <FaUserCircle
+            size={28}
+            onClick={() => setDropdownOpen(!isDropdownOpen)}
+          />
         )}
 
         {isDropdownOpen && (
