@@ -28,7 +28,6 @@ function SearchPage() {
             ? res.data.members
             : [];
           setMembers(members);
-          console.log('모임 구성원 불러오기 결과: ', members);
         } else {
           setMembers([]);
         }

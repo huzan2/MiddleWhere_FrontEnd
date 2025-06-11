@@ -7,7 +7,7 @@ import {
   getFriendList,
   addFriend,
   deleteFriend,
-  getFriendDetail
+  getFriendDetail,
 } from '../Apis/friend';
 
 function FriendPage() {
@@ -20,7 +20,7 @@ function FriendPage() {
     const fetchFriends = async () => {
       try {
         const res = await getFriendList(user.id);
-        if (Array.isArray(res)) setFriends(res);
+        if (Array.isArray(res.data.list)) setFriends(res.data.list);
       } catch (err) {
         console.warn('⚠️ 친구 목록 로딩 실패:', err);
         setFriends([]);
@@ -53,7 +53,9 @@ function FriendPage() {
   const handleFriendClick = async (friendId) => {
     try {
       const detail = await getFriendDetail(friendId);
-      alert(`이름: ${detail.friendName}\n나이: ${detail.age}\n위치: ${detail.defaultLocation}`);
+      alert(
+        `이름: ${detail.friendName}\n나이: ${detail.age}\n위치: ${detail.defaultLocation}`,
+      );
     } catch (err) {
       alert('친구 정보 불러오기 실패');
     }
@@ -77,13 +79,20 @@ function FriendPage() {
       ) : (
         <FriendList>
           {friends.map((f) => (
-            <FriendItem key={f.friendId} onClick={() => handleFriendClick(f.friendId)}>
+            <FriendItem
+              key={f.friendId}
+              onClick={() => handleFriendClick(f.friendId)}
+            >
               <FriendProfile src={f.profileImage || defaultAvatar} />
               <FriendName>{f.friendName || f.userName}</FriendName>
-              <DeleteButton onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteFriend(f.friendId);
-              }}>삭제</DeleteButton>
+              <DeleteButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteFriend(f.friendId);
+                }}
+              >
+                삭제
+              </DeleteButton>
             </FriendItem>
           ))}
         </FriendList>
@@ -94,14 +103,66 @@ function FriendPage() {
 
 export default FriendPage;
 
-const Container = styled.div`padding: 20px;`;
-const Title = styled.h2`font-size: 20px; margin-bottom: 16px;`;
-const Row = styled.div`display: flex; gap: 8px; margin-bottom: 20px;`;
-const Input = styled.input`flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px;`;
-const Button = styled.button`padding: 10px 16px; background: ${({ theme }) => theme.colors.primary}; color: white; border: none; border-radius: 8px; font-weight: bold;`;
-const FriendList = styled.div`display: flex; flex-direction: column; gap: 10px;`;
-const FriendItem = styled.div`display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; cursor: pointer;`;
-const FriendProfile = styled.img`width: 40px; height: 40px; border-radius: 50%; object-fit: cover;`;
-const FriendName = styled.span`flex: 1;`;
-const DeleteButton = styled.button`background: none; border: none; color: red; font-weight: bold; cursor: pointer;`;
-const EmptyText = styled.div`text-align: center; margin-top: 40px; color: gray; font-size: 14px;`;
+const Container = styled.div`
+  padding: 20px;
+`;
+const Title = styled.h2`
+  font-size: 20px;
+  margin-bottom: 16px;
+`;
+const Row = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+`;
+const Input = styled.input`
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+`;
+const Button = styled.button`
+  padding: 10px 16px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+`;
+const FriendList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+const FriendItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+  cursor: pointer;
+`;
+const FriendProfile = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+const FriendName = styled.span`
+  flex: 1;
+`;
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+`;
+const EmptyText = styled.div`
+  text-align: center;
+  margin-top: 40px;
+  color: gray;
+  font-size: 14px;
+`;
