@@ -20,7 +20,7 @@ function FriendPage() {
     const fetchFriends = async () => {
       try {
         const res = await getFriendList(user.id);
-        if (Array.isArray(res.data.list)) setFriends(res.list);
+        if (Array.isArray(res.list)) setFriends(res.list);
       } catch (err) {
         console.warn('⚠️ 친구 목록 로딩 실패:', err);
         setFriends([]);
