@@ -22,7 +22,7 @@ function SideMenu({ onClose }) {
       <MenuContainer onClick={(e) => e.stopPropagation()}>
         <CloseBtn onClick={onClose}>닫기 ✕</CloseBtn>
         <MenuItem onClick={() => navigate('/main')}>메인화면</MenuItem>
-        <MenuItem onClick={() => navigate('/friend')}>친구 관리</MenuItem>
+        <MenuItem onClick={() => navigate('/friends')}>친구 관리</MenuItem>
         <MenuItem onClick={() => navigate('/group')}>그룹 관리</MenuItem>
         <MenuItem onClick={() => navigate('/history')}>이용 기록</MenuItem>
         <MenuItem onClick={() => navigate('/question')}>문의 사항</MenuItem>
@@ -36,10 +36,13 @@ export default SideMenu;
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: flex-start; 
+  justify-content: flex-start;
 `;
 
 const MenuContainer = styled.div`
