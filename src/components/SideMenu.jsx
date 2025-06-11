@@ -23,9 +23,9 @@ function SideMenu({ onClose }) {
         <CloseBtn onClick={onClose}>닫기 ✕</CloseBtn>
         <MenuItem onClick={() => navigate('/main')}>메인화면</MenuItem>
         <MenuItem onClick={() => navigate('/friends')}>친구 관리</MenuItem>
-        <MenuItem onClick={() => navigate('/group')}>그룹 관리</MenuItem>
+        <MenuItem onClick={() => navigate('/groups')}>그룹 관리</MenuItem>
         <MenuItem onClick={() => navigate('/history')}>이용 기록</MenuItem>
-        <MenuItem onClick={() => navigate('/question')}>문의 사항</MenuItem>
+        <MenuItem onClick={() => navigate('/questions')}>문의 사항</MenuItem>
         <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
       </MenuContainer>
     </Overlay>
