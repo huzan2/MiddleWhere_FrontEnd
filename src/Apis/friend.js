@@ -1,5 +1,6 @@
-
 import axios from 'axios';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 // 친구 목록 조회
 export const getFriendList = async (userId) => {

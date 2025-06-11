@@ -1,5 +1,6 @@
-
 import axios from 'axios';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 // 내 그룹 목록 조회
 export const getUserGroups = async (userId) => {

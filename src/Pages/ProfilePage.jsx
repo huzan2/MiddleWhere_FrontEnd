@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import { useNavigate } from 'react-router-dom';
-import { updateUserInfo, deleteUser } from '../Apis/profile';
+import { updateUserInfo, deleteUser, getUserInfo } from '../Apis/profile';
 
 function ProfilePage() {
   const user = JSON.parse(localStorage.getItem('kakao_user'));
@@ -14,12 +14,20 @@ function ProfilePage() {
   const navigate = useNavigate();
 
   const handleSave = async () => {
+    if (
+      nickname.length === 0 ||
+      age.length === 0 ||
+      defaultLocation.length === 0
+    ) {
+      alert('정보를 빠짐없이 입력해주세요.');
+      return;
+    }
     try {
       await updateUserInfo({
         userId: user.id,
-        nickname,
-        age,
-        defaultLocation,
+        userName: nickname,
+        userAge: age,
+        memberLocation: defaultLocation,
       });
       alert('정보가 저장되었습니다.');
       navigate('/main');
@@ -39,6 +47,19 @@ function ProfilePage() {
       alert('탈퇴 실패');
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const myData = await getUserInfo(user.id);
+        setNickname(myData.data.userName);
+        setAge(myData.data.userAge);
+        setDefaultLocation(myData.data.userDefaultLocation);
+      } catch (err) {
+        console.warn('데이터 불러오기 실패: ', err);
+      }
+    };
+    fetchData();
+  }, [user.id]);
 
   return (
     <Container>
@@ -50,7 +71,10 @@ function ProfilePage() {
       <Label>나이</Label>
       <Input value={age} onChange={(e) => setAge(e.target.value)} />
       <Label>기본 출발 위치</Label>
-      <Input value={defaultLocation} onChange={(e) => setDefaultLocation(e.target.value)} />
+      <Input
+        value={defaultLocation}
+        onChange={(e) => setDefaultLocation(e.target.value)}
+      />
       <SaveButton onClick={handleSave}>정보 저장</SaveButton>
       <DeleteButton onClick={handleDeleteUser}>회원 탈퇴</DeleteButton>
     </Container>
@@ -59,9 +83,41 @@ function ProfilePage() {
 
 export default ProfilePage;
 
-const Container = styled.div`padding: 20px;`;
-const Title = styled.h2`font-size: 22px; margin-bottom: 24px;`;
-const Label = styled.label`display: block; margin-top: 12px; margin-bottom: 6px; font-weight: bold;`;
-const Input = styled.input`width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;`;
-const SaveButton = styled.button`margin-top: 20px; width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: bold;`;
-const DeleteButton = styled.button`margin-top: 12px; width: 100%; padding: 10px; background: #eee; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;`;
+const Container = styled.div`
+  padding: 20px;
+`;
+const Title = styled.h2`
+  font-size: 22px;
+  margin-bottom: 24px;
+`;
+const Label = styled.label`
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: bold;
+`;
+const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+`;
+const SaveButton = styled.button`
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+`;
+const DeleteButton = styled.button`
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+`;

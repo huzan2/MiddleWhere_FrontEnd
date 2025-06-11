@@ -1,5 +1,7 @@
 // src/Apis/search.js
 import axios from 'axios';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 //  중간지점 검색
 export const searchMidpoint = async ({ locations, category }) => {

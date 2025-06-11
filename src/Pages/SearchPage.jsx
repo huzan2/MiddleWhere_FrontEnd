@@ -28,6 +28,7 @@ function SearchPage() {
             ? res.data.members
             : [];
           setMembers(members);
+          console.log('모임 구성원 불러오기 결과: ', members);
         } else {
           setMembers([]);
         }
@@ -35,24 +36,6 @@ function SearchPage() {
         console.warn('⚠️ 모임 멤버 불러오기 실패:', err);
         setMembers([]);
       }
-      setMembers([
-        {
-          memberName: '홍길동',
-          memberLocation: '서울역',
-        },
-        {
-          memberName: '김영희',
-          memberLocation: '잠실역',
-        },
-        {
-          memberName: '이철수',
-          memberLocation: '홍대입구역',
-        },
-        {
-          memberName: '한지우',
-          memberLocation: '석계역',
-        },
-      ]);
     };
 
     fetchMembers();

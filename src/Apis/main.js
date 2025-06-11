@@ -1,5 +1,6 @@
 import axios from 'axios';
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URI;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 // 내 모임 목록 조회
 export const getMyMeetings = async (userId) => {

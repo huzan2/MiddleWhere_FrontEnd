@@ -1,6 +1,7 @@
-
 // src/Apis/create.js
 import axios from 'axios';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 // 친구 목록 불러오기
 export const fetchFriendList = async (userId) => {

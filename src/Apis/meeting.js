@@ -1,5 +1,7 @@
 // src/Apis/meeting.js
 import axios from 'axios';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
+axios.defaults.baseURL = BACKEND_URL;
 
 // 모임 인원 삭제
 export const removeMemberFromMeeting = async (targetUserId, meetId) => {
