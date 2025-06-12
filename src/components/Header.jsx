@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { FaBars, FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-function Header({ onMenuClick }) {
+function Header({ onMenuClick, userName }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('kakao_user'));
   const nickname = user?.kakao_account?.profile?.nickname;
@@ -60,7 +60,7 @@ function Header({ onMenuClick }) {
 
         {isDropdownOpen && (
           <Dropdown>
-            <DropdownItem>{nickname}님</DropdownItem>
+            <DropdownItem>{userName}님</DropdownItem>
             <DropdownItem onClick={handleGoToProfile}>내 정보</DropdownItem>
             <DropdownItem onClick={handleLogout}>로그아웃</DropdownItem>
           </Dropdown>

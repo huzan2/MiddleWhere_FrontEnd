@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import { useNavigate } from 'react-router-dom';
 import { getMyMeetings, getMyGroups } from '../Apis/main';
+import { getUserInfo } from '@/Apis/profile';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -11,14 +12,17 @@ function MainPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [meets, setMeets] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [usrName, setUsrName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const meetData = await getMyMeetings(user.id);
         const groupData = await getMyGroups(user.id);
+        const mydata = await getUserInfo(user.id);
         setMeets(Array.isArray(meetData) ? meetData : []);
         setGroups(Array.isArray(groupData) ? groupData : []);
+        setUsrName(mydata.data.userName);
       } catch (err) {
         console.warn('데이터 불러오기 실패:', err);
         setMeets([]);
@@ -30,7 +34,7 @@ function MainPage() {
 
   return (
     <Container>
-      <Header onMenuClick={() => setIsMenuOpen(true)} />
+      <Header onMenuClick={() => setIsMenuOpen(true)} userName={usrName} />
       {isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}
 
       <Section>

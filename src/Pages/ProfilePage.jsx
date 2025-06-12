@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import { useNavigate } from 'react-router-dom';
 import { updateUserInfo, deleteUser, getUserInfo } from '../Apis/profile';
+import DaumPostcodeEmbed from 'react-daum-postcode';
 
 function ProfilePage() {
   const user = JSON.parse(localStorage.getItem('kakao_user'));
@@ -12,6 +13,9 @@ function ProfilePage() {
   const [defaultLocation, setDefaultLocation] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [lat, setLat] = useState('');
+  const [lng, setLng] = useState('');
 
   const handleSave = async () => {
     if (
@@ -28,6 +32,8 @@ function ProfilePage() {
         userName: nickname,
         userAge: age,
         memberLocation: defaultLocation,
+        coo1: lat,
+        coo2: lng,
       });
       alert('정보가 저장되었습니다.');
       navigate('/main');
@@ -46,6 +52,30 @@ function ProfilePage() {
     } catch (err) {
       alert('탈퇴 실패');
     }
+  };
+  const handleComplete = (data) => {
+    console.log(data);
+    setIsModalOpen(false);
+    const getCoordinates = (addr) => {
+      if (window.kakao) {
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.addressSearch(addr, function (result, status) {
+          if (status !== kakao.maps.services.Status.OK) {
+            alert('주소 검색 중 오류가 발생했습니다.');
+            return;
+          }
+          const coords = new kakao.maps.LatLng(
+            Number(result[0].y),
+            Number(result[0].x),
+          );
+          setLng(coords.getLng());
+          setLat(coords.getLat());
+          console.log(coords.getLng(), coords.getLat());
+        });
+      }
+    };
+    getCoordinates(data.address);
+    setDefaultLocation(data.address);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -71,10 +101,14 @@ function ProfilePage() {
       <Label>나이</Label>
       <Input value={age} onChange={(e) => setAge(e.target.value)} />
       <Label>기본 출발 위치</Label>
-      <Input
-        value={defaultLocation}
-        onChange={(e) => setDefaultLocation(e.target.value)}
+      <LocationSearchButton
+        onClick={() => {
+          setIsModalOpen(true);
+        }}
+        readOnly={true}
+        placeholder={defaultLocation}
       />
+      {isModalOpen ? <DaumPostcodeEmbed onComplete={handleComplete} /> : null}
       <SaveButton onClick={handleSave}>정보 저장</SaveButton>
       <DeleteButton onClick={handleDeleteUser}>회원 탈퇴</DeleteButton>
     </Container>
@@ -101,6 +135,17 @@ const Input = styled.input`
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
+`;
+const LocationSearchButton = styled.input`
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  &:hover {
+    cursor: pointer;
+  }
+  text-align: center;
+  font-size: medium;
 `;
 const SaveButton = styled.button`
   margin-top: 20px;

@@ -11,13 +11,12 @@ import axios from 'axios';
 function SearchPage() {
   const location = useLocation();
   const meetId = location?.state?.meetId;
-
   const user = JSON.parse(localStorage.getItem('kakao_user'));
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [members, setMembers] = useState([]);
-  const [selectedTag, setSelectedTag] = useState('식사');
-  const TAGS = ['식사', '데이트', '영화', '공부'];
+  const [selectedTag, setSelectedTag] = useState('카페');
+  const TAGS = ['카페', '영화관', '공원', '볼링장'];
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -42,10 +41,14 @@ function SearchPage() {
 
   const handleSearch = async () => {
     try {
-      const locations = members.map((m) => m.memberLocation);
+      const locations = members.map((m) => [
+        parseFloat(m.coo1),
+        parseFloat(m.coo2),
+      ]);
+      console.log(locations);
       const results = await searchMidpoint({
-        locations,
-        category: selectedTag,
+        user_locations: locations,
+        purpose: selectedTag,
       });
       navigate('/detail', { state: { results, tag: selectedTag, members } });
     } catch (err) {
@@ -65,12 +68,14 @@ function SearchPage() {
 
   const handleTagSelect = async (tag) => {
     setSelectedTag(tag);
+    /*
     try {
       const data = await getCategoryRecommendation(tag);
       console.log('카테고리 변경 결과:', data);
     } catch (err) {
       console.warn('카테고리 변경 실패:', err);
     }
+      */
   };
 
   const handleLocationChange = async (member) => {

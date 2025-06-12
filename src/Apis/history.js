@@ -4,7 +4,7 @@ axios.defaults.baseURL = BACKEND_URL;
 
 // 히스토리 목록 조회
 export const getHistoryList = async (userId) => {
-  const res = await axios.get(`/api/history/${userId}`);
+  const res = await axios.get(`/api/history/get/${userId}`);
   return res.data;
 };
 

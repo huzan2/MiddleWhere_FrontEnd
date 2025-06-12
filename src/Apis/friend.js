@@ -15,13 +15,11 @@ export const addFriend = async (userId, friendCode) => {
 
 // 친구 삭제
 export const deleteFriend = async (userId, friendId) => {
-  return axios.delete(`/api/friend/delete/${userId}`, {
-    data: { friendId },
-  });
+  return axios.delete(`/api/friend/delete/${userId}/${friendId}`);
 };
 
 // 친구 상세보기
 export const getFriendDetail = async (userId) => {
-  const res = await axios.get(`/api/friend/info/${userId}`);
+  const res = await axios.get(`/api/user/info/${userId}`);
   return res.data;
 };

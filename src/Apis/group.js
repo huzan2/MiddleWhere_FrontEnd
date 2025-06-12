@@ -21,7 +21,10 @@ export const getGroupDetail = async (groupId) => {
 
 // 그룹 수정
 export const updateGroupInfo = async ({ groupId, groupName }) => {
-  return axios.post(`/api/group/edit`, { groupId, groupName });
+  return axios.post(`/api/group/edit`, {
+    groupId: groupId,
+    groupName: groupName,
+  });
 };
 
 // 그룹 삭제

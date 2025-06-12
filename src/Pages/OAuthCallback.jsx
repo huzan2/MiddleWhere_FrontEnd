@@ -48,9 +48,11 @@ const OAuthCallback = () => {
           if (check.status === 200) {
             navigate('/main');
             return;
-          } else if (check.status === 404) {
+          }
+          if (check.status === 205) {
             console.log('신규 사용자입니다. 회원가입 페이지로 이동');
             navigate('/register');
+            return;
           }
         } catch (err) {
           console.log('회원 정보 확인 중 오류 발생');

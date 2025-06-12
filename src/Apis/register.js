@@ -5,15 +5,19 @@ axios.defaults.baseURL = BACKEND_URL;
 // 회원 등록
 export const registerUser = async ({
   userId,
-  nickname,
-  age,
-  defaultLocation,
+  userName,
+  userAge,
+  memberLocation,
+  coo1,
+  coo2,
 }) => {
   return axios.post('/api/user/register', {
     userId: userId,
-    userName: nickname,
-    userAge: age,
-    userDefaultLocation: defaultLocation,
+    userName: userName,
+    userAge: userAge,
+    userDefaultLocation: memberLocation,
     userProfile: null,
+    coo1: coo1,
+    coo2: coo2,
   });
 };

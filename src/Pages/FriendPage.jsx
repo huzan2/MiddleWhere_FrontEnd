@@ -44,7 +44,8 @@ function FriendPage() {
   const handleDeleteFriend = async (friendId) => {
     try {
       await deleteFriend(user.id, friendId);
-      setFriends((prev) => prev.filter((f) => f.friendId !== friendId));
+      setFriends((prev) => prev.filter((f) => f.userId !== friendId));
+      alert('친구 삭제 성공');
     } catch (err) {
       alert('친구 삭제 실패');
     }
@@ -54,7 +55,7 @@ function FriendPage() {
     try {
       const detail = await getFriendDetail(friendId);
       alert(
-        `이름: ${detail.friendName}\n나이: ${detail.age}\n위치: ${detail.defaultLocation}`,
+        `이름: ${detail.userName}\n나이: ${detail.userAge}\n위치: ${detail.userDefaultLocation}`,
       );
     } catch (err) {
       alert('친구 정보 불러오기 실패');
@@ -80,15 +81,15 @@ function FriendPage() {
         <FriendList>
           {friends.map((f) => (
             <FriendItem
-              key={f.friendId}
-              onClick={() => handleFriendClick(f.friendId)}
+              key={f.userId}
+              onClick={() => handleFriendClick(f.userId)}
             >
               <FriendProfile src={f.profileImage || defaultAvatar} />
-              <FriendName>{f.friendName || f.userName}</FriendName>
+              <FriendName>{f.userName}</FriendName>
               <DeleteButton
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteFriend(f.friendId);
+                  handleDeleteFriend(f.userId);
                 }}
               >
                 삭제

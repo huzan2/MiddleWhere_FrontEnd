@@ -4,10 +4,10 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URI;
 axios.defaults.baseURL = BACKEND_URL;
 
 //  중간지점 검색
-export const searchMidpoint = async ({ locations, category }) => {
+export const searchMidpoint = async ({ user_locations, purpose }) => {
   const res = await axios.post('/api/search/where', {
-    locations,
-    category,
+    purpose: purpose,
+    user_locations: user_locations,
   });
   return res.data;
 };

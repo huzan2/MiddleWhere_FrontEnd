@@ -4,16 +4,20 @@ axios.defaults.baseURL = BACKEND_URL;
 
 // 사용자 정보 수정
 export const updateUserInfo = async ({
-  userid,
-  nickname,
-  age,
-  defaultLocation,
+  userId,
+  userName,
+  userAge,
+  memberLocation,
+  coo1,
+  coo2,
 }) => {
   return axios.post('/api/user/edit', {
-    userId: userid,
-    userName: nickname,
-    userAge: age,
-    userDefaultLocation: defaultLocation,
+    userId: userId,
+    userName: userName,
+    userAge: userAge,
+    userDefaultLocation: memberLocation,
+    coo1: coo1,
+    coo2: coo2,
   });
 };
 
