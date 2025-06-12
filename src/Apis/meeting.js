@@ -39,7 +39,7 @@ export const updateMeetingInfo = async ({ meetId, newName, newTag }) => {
 // 모임 친구 추가
 export const addUserToMeeting = async ({ meetId, userId }) => {
   return axios.post('/api/meeting/adduser', {
-    meetId,
-    userId,
+    meetId: meetId,
+    userId: userId,
   });
 };

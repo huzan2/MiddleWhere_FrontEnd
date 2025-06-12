@@ -10,10 +10,10 @@ export const fetchFriendList = async (userId) => {
 };
 
 // 모임 정보 등록
-export const registerMeetingInfo = async ({ meetName, userId }) => {
-  const res = await axios.post('/api/meeting/info', {
-    meetName,
-    userId,
+export const registerMeetingInfo = async ({ meetName, ownerId }) => {
+  const res = await axios.post('/api/meeting/create', {
+    meetName: meetName,
+    ownerId: ownerId,
   });
   return res.data;
 };

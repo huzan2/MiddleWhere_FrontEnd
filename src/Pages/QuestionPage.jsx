@@ -5,7 +5,7 @@ import SideMenu from '../components/SideMenu';
 import {
   getQuestionList,
   submitQuestion,
-  getQuestionDetail
+  getQuestionDetail,
 } from '../Apis/question';
 
 function QuestionPage() {
@@ -18,7 +18,7 @@ function QuestionPage() {
   const fetchQuestions = async () => {
     try {
       const res = await getQuestionList();
-      if (Array.isArray(res)) setQuestions(res);
+      if (Array.isArray(res.list)) setQuestions(res.list);
     } catch (err) {
       console.warn('⚠️ 문의 목록 불러오기 실패:', err);
       setQuestions([]);
@@ -80,9 +80,11 @@ function QuestionPage() {
       ) : (
         <QuestionList>
           {questions.map((q, idx) => (
-            <QuestionItem key={idx} onClick={() => handleViewQuestionDetail(q.questionId)}>
+            <QuestionItem
+              key={idx}
+              onClick={() => handleViewQuestionDetail(q.questionId)}
+            >
               <strong>{q.title}</strong>
-              <p>{q.content}</p>
             </QuestionItem>
           ))}
         </QuestionList>
@@ -93,13 +95,58 @@ function QuestionPage() {
 
 export default QuestionPage;
 
-const Container = styled.div`padding: 20px;`;
-const Title = styled.h2`font-size: 20px; margin-bottom: 16px;`;
-const Form = styled.div`display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;`;
-const Input = styled.input`padding: 10px; border: 1px solid #ccc; border-radius: 8px;`;
-const TextArea = styled.textarea`padding: 10px; border: 1px solid #ccc; border-radius: 8px; height: 100px; resize: none;`;
-const Button = styled.button`padding: 12px; background: ${({ theme }) => theme.colors.primary}; color: white; border: none; border-radius: 8px; font-weight: bold;`;
-const SubTitle = styled.h3`margin-top: 24px; margin-bottom: 12px;`;
-const QuestionList = styled.div`display: flex; flex-direction: column; gap: 16px;`;
-const QuestionItem = styled.div`padding: 12px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; cursor: pointer;`;
-const EmptyText = styled.div`text-align: center; margin-top: 40px; color: gray; font-size: 14px;`;
+const Container = styled.div`
+  padding: 20px;
+`;
+const Title = styled.h2`
+  font-size: 20px;
+  margin-bottom: 16px;
+`;
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+`;
+const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+`;
+const TextArea = styled.textarea`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  height: 100px;
+  resize: none;
+`;
+const Button = styled.button`
+  padding: 12px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+`;
+const SubTitle = styled.h3`
+  margin-top: 24px;
+  margin-bottom: 12px;
+`;
+const QuestionList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+const QuestionItem = styled.div`
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+  cursor: pointer;
+`;
+const EmptyText = styled.div`
+  text-align: center;
+  margin-top: 40px;
+  color: gray;
+  font-size: 14px;
+`;

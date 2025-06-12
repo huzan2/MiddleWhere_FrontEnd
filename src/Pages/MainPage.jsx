@@ -53,6 +53,13 @@ function MainPage() {
                 {m.meetName}
               </Card>
             ))}
+            <CreateButton
+              onClick={() => {
+                navigate('/create');
+              }}
+            >
+              모임 생성하기
+            </CreateButton>
           </CardList>
         )}
       </Section>
@@ -102,4 +109,13 @@ const Card = styled.div`
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
+`;
+
+const CreateButton = styled.button`
+  padding: 14px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  font-size: 16px;
+  font-weight: 500;
+  border: solid #d5d5d5 1px;
 `;

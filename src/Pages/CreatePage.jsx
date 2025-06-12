@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import { useNavigate } from 'react-router-dom';
-import { fetchFriendList, inviteUserToMeeting } from '../Apis/create';
+import { fetchFriendList } from '../Apis/create';
 import { registerMeetingInfo } from '../Apis/create';
 import { addUserToMeeting } from '../Apis/meeting';
 
@@ -18,11 +18,13 @@ function CreatePage() {
   const handleCreateMeeting = async () => {
     if (!groupName.trim()) return;
     try {
-      const res = await registerMeetingInfo({ meetName: groupName, userId: user.id });
+      const res = await registerMeetingInfo({
+        meetName: groupName,
+        ownerId: user.id,
+      });
       const meetId = res.meetId;
       for (const f of selectedFriends) {
-        await addUserToMeeting({ meetId, userId: f.friendId });
-        await inviteUserToMeeting({ userId: f.friendId, meetId });
+        await addUserToMeeting({ meetId: meetId, userId: f.userId });
       }
       alert('모임이 생성되었습니다.');
       navigate('/main');
@@ -35,7 +37,7 @@ function CreatePage() {
     const loadFriends = async () => {
       try {
         const data = await fetchFriendList(user.id);
-        setFriends(Array.isArray(data) ? data : []);
+        setFriends(Array.isArray(data.list) ? data.list : []);
       } catch (err) {
         console.warn('친구 목록 조회 실패:', err);
         setFriends([]);
@@ -46,9 +48,9 @@ function CreatePage() {
 
   const toggleFriend = (friend) => {
     setSelectedFriends((prev) =>
-      prev.some((f) => f.friendId === friend.friendId)
-        ? prev.filter((f) => f.friendId !== friend.friendId)
-        : [...prev, friend]
+      prev.some((f) => f.userId === friend.userId)
+        ? prev.filter((f) => f.userId !== friend.userId)
+        : [...prev, friend],
     );
   };
 
@@ -69,8 +71,8 @@ function CreatePage() {
       <FriendList>
         {friends.map((friend) => (
           <FriendItem
-            key={friend.friendId}
-            selected={selectedFriends.some((f) => f.friendId === friend.friendId)}
+            key={friend.userId}
+            selected={selectedFriends.some((f) => f.userId === friend.userId)}
             onClick={() => toggleFriend(friend)}
           >
             {friend.friendName || friend.userName}
@@ -85,11 +87,30 @@ function CreatePage() {
 
 export default CreatePage;
 
-const Container = styled.div`padding: 20px;`;
-const Title = styled.h2`font-size: 24px; margin-bottom: 20px;`;
-const Label = styled.div`margin-top: 16px; margin-bottom: 8px; font-weight: bold;`;
-const Input = styled.input`padding: 10px; width: 100%; border-radius: 8px; border: 1px solid #ccc;`;
-const FriendList = styled.div`display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;`;
+const Container = styled.div`
+  padding: 20px;
+`;
+const Title = styled.h2`
+  font-size: 24px;
+  margin-bottom: 20px;
+`;
+const Label = styled.div`
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+`;
+const Input = styled.input`
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+`;
+const FriendList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+`;
 const FriendItem = styled.div`
   padding: 8px 12px;
   background: ${({ selected }) => (selected ? '#4f46e5' : '#eee')};
@@ -97,4 +118,14 @@ const FriendItem = styled.div`
   border-radius: 16px;
   cursor: pointer;
 `;
-const SubmitBtn = styled.button`margin-top: 24px; width: 100%; padding: 14px; font-weight: bold; background: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 16px;`;
+const SubmitBtn = styled.button`
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  font-weight: bold;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+`;

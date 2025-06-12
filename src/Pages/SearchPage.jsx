@@ -16,6 +16,7 @@ function SearchPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [members, setMembers] = useState([]);
   const [selectedTag, setSelectedTag] = useState('카페');
+  const [title, setTitle] = useState('');
   const TAGS = ['카페', '영화관', '공원', '볼링장'];
 
   useEffect(() => {
@@ -23,6 +24,7 @@ function SearchPage() {
       try {
         if (meetId) {
           const res = await axios.get(`/api/meeting/info/${meetId}`);
+          setTitle(res.data.meetName);
           const members = Array.isArray(res.data.members)
             ? res.data.members
             : [];
@@ -50,19 +52,11 @@ function SearchPage() {
         user_locations: locations,
         purpose: selectedTag,
       });
-      navigate('/detail', { state: { results, tag: selectedTag, members } });
+      navigate('/detail', { state: { results, tag: selectedTag } });
     } catch (err) {
       console.warn('검색 실패:', err);
-      navigate('/detail', {
-        state: {
-          results: {
-            center: {},
-            places: [],
-          },
-          tag: selectedTag,
-          members,
-        },
-      });
+      alert('오류가 발생하여 메인 화면으로 돌아갑니다.');
+      navigate('/main');
     }
   };
 
@@ -106,7 +100,7 @@ function SearchPage() {
     <Container>
       <Header onMenuClick={() => setIsMenuOpen(true)} />
       {isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}
-      <Title>중간지점 검색</Title>
+      <Title>{title}</Title>
 
       <MemberList>
         {Array.isArray(members) && members.length > 0 ? (
@@ -140,7 +134,7 @@ function SearchPage() {
         ))}
       </Tags>
 
-      <SearchBtn onClick={handleSearch}>검색결과 확인하기</SearchBtn>
+      <SearchBtn onClick={handleSearch}>결과 확인하기</SearchBtn>
     </Container>
   );
 }
